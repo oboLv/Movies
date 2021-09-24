@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using NLog;
 namespace Movies
 {
     class Program
@@ -12,8 +13,10 @@ namespace Movies
             var genres = new List<string>();
             var exit = false;
             var file = "movies.csv";
+            var logger = LogManager.GetCurrentClassLogger();
 
             var sr = new StreamReader(file);
+            sr.ReadLine();
             while (!sr.EndOfStream)
             {
                 var line = sr.ReadLine();
@@ -23,56 +26,71 @@ namespace Movies
                 genres.Add(split[2]);
             }
             sr.Close();
-
-            System.Console.WriteLine("1. View movies");
-            System.Console.WriteLine("2. Add movie");
-            System.Console.WriteLine("3. Exit");
-            var choice = Console.ReadLine();
-            var display = 0;
-
-            if (choice == "1")
+            while (!exit)
             {
-                Console.Clear();
-                var format = "{0, 5}\t{1,25}\t{2}";
-                var exitview = false;
-                var displaybool = true;
-                while (!exitview)
-                {
-                    if (displaybool == true)
-                    {
-                        for (int i = 0; i < 10; i++)
-                        {
-                            System.Console.WriteLine(format, movieID[display], titles[display], genres[display]);
-                            display++;
-                        }
+                System.Console.WriteLine("1. View movies");
+                System.Console.WriteLine("2. Add movie");
+                System.Console.WriteLine("3. Exit");
+                var choice = Console.ReadLine();
+                var display = 0;
 
-                        System.Console.WriteLine("1. View more");
-                        System.Console.WriteLine("2. Return to menu");
-                    }
-                    var choiceview = Console.ReadLine();
-                    if (choiceview == "1")
+                if (choice == "1")
+                {
+                    Console.Clear();
+                    var format = "{0, 5}\t{1,25}\t{2}";
+                    var exitview = false;
+                    var displaybool = true;
+                    while (!exitview)
                     {
-                        displaybool = true;
-                        Console.Clear();
-                    }
-                    else if (choiceview == "2")
-                    {
-                        exitview = true;
-                    }
-                    else
-                    {
-                        displaybool = false;
-                        System.Console.WriteLine("Try again");
+                        if (displaybool == true)
+                        {
+                            for (int i = 0; i < 10; i++)
+                            {
+                                System.Console.WriteLine(format, movieID[display], titles[display], genres[display]);
+                                display++;
+                            }
+
+                            System.Console.WriteLine("1. View more");
+                            System.Console.WriteLine("2. Return to menu");
+                        }
+                        var choiceview = Console.ReadLine();
+                        if (choiceview == "1")
+                        {
+                            displaybool = true;
+                            Console.Clear();
+                        }
+                        else if (choiceview == "2")
+                        {
+                            exitview = true;
+                        }
+                        else
+                        {
+                            displaybool = false;
+                            System.Console.WriteLine("Try again");
+                        }
                     }
                 }
-            }
-            else if (choice == "2")
-            {
-                Console.Clear();
+                else if (choice == "2")
+                {
+                    Console.Clear();
                     var newGenreList = new List<string>();
-                    System.Console.Write("Enter Title: ");
-                    var newTitle = Console.ReadLine();
-                    System.Console.WriteLine(newTitle);
+                    var newTitleBool = true;
+                    var newTitle = "";
+
+                    do
+                    {
+
+
+                        System.Console.Write("Enter Title: ");
+
+                        newTitle = Console.ReadLine();
+                        if (titles.Contains(newTitle))
+                        {
+                            System.Console.WriteLine("This title already exists, try again.");
+                            newTitleBool = false;
+                            logger.Error("Repeat title");
+                        }
+                    } while (!newTitleBool);
                     var newGenreBool = false;
                     do
                     {
@@ -82,7 +100,7 @@ namespace Movies
                         newGenreList.Add(newGenre);
                         System.Console.WriteLine("Add more genres? (Y/N)");
                         var moreGenres = Console.ReadLine();
-                        if(moreGenres.ToUpper() == "Y")
+                        if (moreGenres.ToUpper() == "Y")
                         {
                             break;
                         }
@@ -90,12 +108,12 @@ namespace Movies
                         {
                             newGenreBool = true;
                         }
-                    }while(!newGenreBool);
+                    } while (!newGenreBool);
                     var joinedGenres = String.Join("|", newGenreList.ToArray());
                     var newID = 0;
-                    foreach(int i in movieID)
+                    foreach (int i in movieID)
                     {
-                        if(i > newID)
+                        if (i > newID)
                         {
                             newID = i + 1;
                         }
@@ -104,15 +122,17 @@ namespace Movies
                     titles.Add(newTitle);
                     genres.Add(joinedGenres);
                     var readyAddition = $"{newID},{newTitle},{joinedGenres}";
-                    var writer = new StreamWriter(file);
-            }
-            else if (choice == "3")
-            {
-                exit = true;
-            }
-            else
-            {
-                System.Console.WriteLine("Try again.");
+                    var sw = new StreamWriter(file);
+                    sw.WriteLine(readyAddition);
+                }
+                else if (choice == "3")
+                {
+                    exit = true;
+                }
+                else
+                {
+                    System.Console.WriteLine("Try again.");
+                }
             }
         }
     }
