@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using Movies.Models;
 
-namespace Movies.Models
+namespace Movies.Files
 {
-    public abstract class FileRepo
+
+    public abstract class FileRepo : IFileRepo
     {
         public FileRepo(string file)
         {
