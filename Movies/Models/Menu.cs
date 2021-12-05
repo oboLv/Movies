@@ -13,7 +13,8 @@ namespace Movies
         {
             System.Console.WriteLine("1. View media");
             System.Console.WriteLine("2. Add media");
-            System.Console.WriteLine("3. Exit");
+            System.Console.WriteLine("3. Search media");
+            System.Console.WriteLine("4. Exit");
             var selection = Console.ReadLine();
             return selection;
         }
@@ -120,8 +121,47 @@ namespace Movies
             }
             else if (selection == "4")
             {
-                
+
             }
+        }
+
+
+        public void Search()
+        {
+            var m = new MovieFile();
+            var s = new ShowFile();
+            var v = new VideoFile();
+
+            var movieList = m.GetMedia();
+            var showList = s.GetMedia();
+            var videoList = v.GetMedia();
+
+            System.Console.WriteLine("Enter title to search: ");
+            var searchTitle = Console.ReadLine();
+
+            var movieTitles = movieList.Where(c => c.title == searchTitle).Select(c => c.title);
+            var showTitles = showList.Where(c => c.title == searchTitle).Select(c => c.title);
+            var videoTitles = videoList.Where(c => c.title == searchTitle).Select(c => c.title);
+            var totalTitles = movieTitles.Concat(showTitles).Concat(videoTitles).ToList();
+
+            var numResults = totalTitles.Count();
+
+            if (numResults == 0)
+            {
+                System.Console.WriteLine("No results found");
+                System.Console.WriteLine("");
+            }
+            else
+            {
+                for (int i = 0; i <= numResults; i++)
+                {
+                    System.Console.WriteLine($"{i + 1}. {totalTitles[0]}");
+                }
+            }
+
+            System.Console.WriteLine($"Total matches: {numResults}");
+            System.Console.WriteLine("Press any key to continue.");
+            Console.ReadKey();
         }
     }
 }

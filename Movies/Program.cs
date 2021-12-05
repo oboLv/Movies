@@ -27,6 +27,10 @@ namespace Movies
                 }
                 else if (choice == "3")
                 {
+                    menu.Search();
+                }
+                else if (choice == "4")
+                {
                     exit = true;
                 }
                 else
